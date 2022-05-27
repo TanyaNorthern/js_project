@@ -56,70 +56,75 @@ class Cost {
     }
 }
 
+class Addons {
+    constructor() {
+        this.items = {
+            cheese: {
+                cost: new Cost(10, 20),
+                quantity: 0
+            },
+            salad: {
+                cost: new Cost(20, 5),
+                quantity: 0
+            },
+            potatoes: {
+                cost: new Cost(10, 20),
+                quantity: 0
+            },
+            seasoning: {
+                cost: new Cost(15, 10),
+                quantity: 0
+            },
+            mayonnaise: {
+                cost: new Cost(20, 5),
+                quantity: 0
+            },
+        };
+    }
+}
+
 class Hamburger {
-    constructor(cost = new Cost(), addons = null) {
+    constructor(cost = new Cost(), addons = new Addons()) {
         this.cost = cost;
         this.addons = addons;
     }
 
     incrementTopping(toppingKey) {
-        if (toppingKey in this.addons) {
-            this.addons[toppingKey].quantity++;
+        if (toppingKey in this.addons.items) {
+            this.addons.items[toppingKey].quantity++;
         }
     }
 
     incrementAllToppings() {
-        for (const toppingKey in this.addons) {
-            this.addons[toppingKey].quantity++;
+        for (const toppingKey in this.addons.items) {
+            this.addons.items[toppingKey].quantity++;
         }
     }
 
     decrementTopping(toppingKey) {
-        if (toppingKey in this.addons) {
-            this.addons[toppingKey].quantity--;
+        if (toppingKey in this.addons.items) {
+            this.addons.items[toppingKey].quantity--;
         }
     }
 
     resetAllToppings() {
-        for (const toppingKey in this.addons) {
-            this.addons[toppingKey].quantity = 0;
+        for (const toppingKey in this.addons.items) {
+            this.addons.items[toppingKey].quantity = 0;
         }
     }
 
     calculateTotalCost() {
         let summary = new Cost();
-        for (const toppingKey in this.addons) {
-            summary = summary.sum(this.addons[toppingKey].cost.multiple(this.addons[toppingKey].quantity));
+        for (const toppingKey in this.addons.items) {
+            summary = summary.sum(this.addons.items[toppingKey].cost.multiple(this.addons.items[toppingKey].quantity));
         }
         summary = summary.sum(this.cost);
         return summary;
     }
 }
 
-const addons = {
-    cheese: {
-        cost: new Cost(10, 20),
-        quantity: 0
-    },
-    salad: {
-        cost: new Cost(20, 5),
-        quantity: 0
-    },
-    potatoes: {
-        cost: new Cost(10, 20),
-        quantity: 0
-    },
-    seasoning: {
-        cost: new Cost(15, 10),
-        quantity: 0
-    },
-    mayonnaise: {
-        cost: new Cost(20, 5),
-        quantity: 0
-    },
-};
-
 const bigHamburgerCost = new Cost(100, 40);
+let addons = new Addons();
 const bigHamburger = new Hamburger(bigHamburgerCost, addons);
 bigHamburger.incrementTopping('cheese');
 bigHamburger.incrementTopping('potatoes');
@@ -130,6 +135,7 @@ console.log(bigHamburger);
 console.log(bigHamburger.calculateTotalCost());
 
 const smallHamburgerCost = new Cost(50, 20);
+addons = new Addons();
 const smallHamburger = new Hamburger(smallHamburgerCost, addons);
 smallHamburger.incrementTopping('cheese');
 smallHamburger.incrementTopping('potatoes');
