@@ -1,45 +1,45 @@
 const goods = [
-    { title: 'Shirt', price: 150 },
-    { title: 'Socks', price: 50 },
-    { title: 'Jacket', price: 350 },
-    { title: 'Shoes', price: 250 },
+    { product_name: 'Shirt', price: 150 },
+    { product_name: 'Socks', price: 50 },
+    { product_name: 'Jacket', price: 350 },
+    { product_name: 'Shoes', price: 250 },
 ];
 
-class GoodsFormatter {
-    constructor(itemClassName = '') {
-        this.itemClassName = itemClassName;
+class GoodsItem {
+    constructor({ product_name, price }) {
+        this.product_name = product_name;
+        this.price = price;
     }
-    format(item = null) {
-        return `<div class="${this.itemClassName}"><h3>${item.title}</h3><p>${item.price}</p></div>`;
-    }
-}
-
-class GoodsTools {
-    summary(items = []) {
-        return items
-            .map(item => item.price)
-            .reduce((prev, next) => prev + next);
+    render() {
+        return `<div class="goods-item">
+        <h3>${this.product_name}</h3>
+        <p>${this.price}</p>
+        </div>`;
     }
 }
 
-class CardsHandler {
-    constructor(containerClassName = '', goodsFormatter = null, goodsTools = null) {
-        this.containerClassName = containerClassName;
-        this.goodsFormatter = goodsFormatter;
-        this.goodsTools = goodsTools;
+class GoodsList {
+    constructor() {
+        this.items = [];
     }
-    render(items = []) {
-        return document.querySelector(`.${this.containerClassName}`)
-            .innerHTML = items.map(item => this.goodsFormatter.format(item)).join('');
+    fetchData(items) {
+        this.items = items;
     }
-    summary(items = []) {
-        return this.goodsTools.summary(items);
+    render() {
+        document.querySelector('.goods-list').innerHTML =
+            this.items.map(item => {
+                return new GoodsItem(item).render()
+            }).join('');
+    }
+    summary() {
+        return this.items.reduce((prev, next) => prev + next.price, 0);
     }
 }
 
-const cardsHandler = new CardsHandler('goods-list', new GoodsFormatter('goods-item'), new GoodsTools());
-cardsHandler.render(goods);
-console.log(cardsHandler.summary(goods))
+const goodsList = new GoodsList();
+goodsList.fetchData(goods);
+goodsList.render();
+console.log(goodsList.summary());
 
 // Hamburgers
 
@@ -48,99 +48,97 @@ class Cost {
         this.price = price;
         this.calories = calories;
     }
-    sum(cost = new Cost()) {
+
+    getSumOfCosts(cost = new Cost()) {
         return new Cost(this.price + cost.price, this.calories + cost.calories);
     }
-    multiple(times = 0) {
-        return new Cost(this.price * times, this.calories * times);
+}
+
+class QuanteeCost extends Cost {
+    constructor(price = 0, calories = 0) {
+        super(price, calories);
+        this.quantity = 0;
+    }
+
+    getCost() {
+        return new Cost(this.price * this.quantity, this.calories * this.quantity);
     }
 }
 
-class Addons {
+class Toppings {
+    static cheeseTopping = 'cheese';
+    static saladTopping = 'salad';
+    static potatoesTopping = 'potatoes';
+    static seasoningTopping = 'seasoning';
+    static mayonnaiseTopping = 'mayonnaise';
+
     constructor() {
-        this.items = {
-            cheese: {
-                cost: new Cost(10, 20),
-                quantity: 0
-            },
-            salad: {
-                cost: new Cost(20, 5),
-                quantity: 0
-            },
-            potatoes: {
-                cost: new Cost(10, 20),
-                quantity: 0
-            },
-            seasoning: {
-                cost: new Cost(15, 10),
-                quantity: 0
-            },
-            mayonnaise: {
-                cost: new Cost(20, 5),
-                quantity: 0
-            },
-        };
-    }
-}
+        this.items = {};
+        this.items[Toppings.cheeseTopping] = new QuanteeCost(10, 20);
+        this.items[Toppings.saladTopping] = new QuanteeCost(20, 5);
+        this.items[Toppings.potatoesTopping] = new QuanteeCost(15, 10);
+        this.items[Toppings.seasoningTopping] = new QuanteeCost(15, 0);
+        this.items[Toppings.mayonnaiseTopping] = new QuanteeCost(20, 5);
+    };
 
-class Hamburger {
-    constructor(cost = new Cost(), addons = new Addons()) {
-        this.cost = cost;
-        this.addons = addons;
-    }
-
-    incrementTopping(toppingKey) {
-        if (toppingKey in this.addons.items) {
-            this.addons.items[toppingKey].quantity++;
-        }
-    }
-
-    incrementAllToppings() {
-        for (const toppingKey in this.addons.items) {
-            this.addons.items[toppingKey].quantity++;
-        }
-    }
-
-    decrementTopping(toppingKey) {
-        if (toppingKey in this.addons.items) {
-            this.addons.items[toppingKey].quantity--;
-        }
-    }
-
-    resetAllToppings() {
-        for (const toppingKey in this.addons.items) {
-            this.addons.items[toppingKey].quantity = 0;
-        }
-    }
-
-    calculateTotalCost() {
+    getCost() {
         let summary = new Cost();
-        for (const toppingKey in this.addons.items) {
-            summary = summary.sum(this.addons.items[toppingKey].cost.multiple(this.addons.items[toppingKey].quantity));
+        for (const toppingKey in this.items) {
+            summary = summary.getSumOfCosts(this.items[toppingKey].getCost());
         }
-        summary = summary.sum(this.cost);
         return summary;
     }
 }
 
-const bigHamburgerCost = new Cost(100, 40);
-let addons = new Addons();
-const bigHamburger = new Hamburger(bigHamburgerCost, addons);
-bigHamburger.incrementTopping('cheese');
-bigHamburger.incrementTopping('potatoes');
-bigHamburger.incrementTopping('potatoes');
-bigHamburger.incrementTopping('potatoes');
-bigHamburger.decrementTopping('potatoes');
-console.log(bigHamburger);
-console.log(bigHamburger.calculateTotalCost());
+class Hamburger {
+    constructor(cost = new Cost(), toppings = new Toppings()) {
+        this.cost = cost;
+        this.toppings = toppings;
+    }
 
-const smallHamburgerCost = new Cost(50, 20);
-addons = new Addons();
-const smallHamburger = new Hamburger(smallHamburgerCost, addons);
-smallHamburger.incrementTopping('cheese');
-smallHamburger.incrementTopping('potatoes');
-smallHamburger.incrementTopping('potatoes');
-smallHamburger.decrementTopping('potatoes');
-smallHamburger.incrementTopping('mayonnaise');
-console.log(smallHamburger);
-console.log(smallHamburger.calculateTotalCost());
+    incrementTopping(toppingKey) {
+        if (toppingKey in this.toppings.items) {
+            this.toppings.items[toppingKey].quantity++;
+        }
+    }
+
+    incrementAllToppings() {
+        for (const toppingKey in this.toppings.items) {
+            this.toppings.items[toppingKey].quantity++;
+        }
+    }
+
+    decrementTopping(toppingKey) {
+        if (toppingKey in this.toppings.items) {
+            this.toppings.items[toppingKey].quantity--;
+        }
+    }
+
+    resetAllToppings() {
+        for (const toppingKey in this.toppings.items) {
+            this.toppings.items[toppingKey].quantity = 0;
+        }
+    }
+
+    getCost() {
+        return this.cost.getSumOfCosts(this.toppings.getCost());
+    }
+}
+
+const bigHamburger = new Hamburger(new Cost(100, 40), new Toppings());
+bigHamburger.incrementTopping(Toppings.cheeseTopping);
+bigHamburger.incrementTopping(Toppings.potatoesTopping);
+bigHamburger.incrementTopping(Toppings.potatoesTopping);
+bigHamburger.incrementTopping(Toppings.potatoesTopping);
+bigHamburger.decrementTopping(Toppings.potatoesTopping);
+console.log('big hamburger');
+console.log(bigHamburger.getCost());
+
+const smallHamburger = new Hamburger(new Cost(50, 20), new Toppings());
+smallHamburger.incrementTopping(Toppings.cheeseTopping);
+smallHamburger.incrementTopping(Toppings.potatoesTopping);
+smallHamburger.incrementTopping(Toppings.potatoesTopping);
+smallHamburger.decrementTopping(Toppings.potatoesTopping);
+smallHamburger.incrementTopping(Toppings.mayonnaiseTopping);
+console.log('small hamburger');
+console.log(smallHamburger.getCost());
