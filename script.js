@@ -1,3 +1,4 @@
+
 const BASE_URL = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses';
 const GOODS_URL = BASE_URL + '/catalogData.json';
 const BASKET_GOODS_URL = BASE_URL + '/getBasket.json'
@@ -29,6 +30,7 @@ class GoodsList {
     constructor() {
         this.items = [];
     }
+
     fetchData() {
         service(GOODS_URL, data => {
             // Execute in EventLoop!!!
@@ -40,11 +42,13 @@ class GoodsList {
     render() {
         document.querySelector('.goods-list').innerHTML =
             this.items.map(item => { return new GoodsItem(item).render() }).join('');
+
     }
     summary() {
         return this.items.reduce((prev, next) => prev + next.price, 0);
     }
 }
+
 
 class BasketGoodsList {
     constructor() {
@@ -64,6 +68,7 @@ goodsList.fetchData();
 
 const basketGoodsList = new BasketGoodsList();
 basketGoodsList.fetchData();
+
 
 // Hamburgers
 
