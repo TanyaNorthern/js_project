@@ -1,9 +1,17 @@
-const goods = [
-    { product_name: 'Shirt', price: 150 },
-    { product_name: 'Socks', price: 50 },
-    { product_name: 'Jacket', price: 350 },
-    { product_name: 'Shoes', price: 250 },
-];
+
+const BASE_URL = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses';
+const GOODS_URL = BASE_URL + '/catalogData.json';
+const BASKET_GOODS_URL = BASE_URL + '/getBasket.json'
+
+function service(url, callback) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', url);
+    xhr.onload = () => {
+        // Execute in EventLoop!!!
+        callback(JSON.parse(xhr.response));
+    }
+    xhr.send();
+}
 
 class GoodsItem {
     constructor({ product_name, price }) {
@@ -22,24 +30,45 @@ class GoodsList {
     constructor() {
         this.items = [];
     }
-    fetchData(items) {
-        this.items = items;
+
+    fetchData() {
+        service(GOODS_URL, data => {
+            // Execute in EventLoop!!!
+            this.items = data;
+            goodsList.render();
+            console.log(goodsList.summary());
+        });
     }
     render() {
         document.querySelector('.goods-list').innerHTML =
-            this.items.map(item => {
-                return new GoodsItem(item).render()
-            }).join('');
+            this.items.map(item => { return new GoodsItem(item).render() }).join('');
+
     }
     summary() {
         return this.items.reduce((prev, next) => prev + next.price, 0);
     }
 }
 
+
+class BasketGoodsList {
+    constructor() {
+        this.items = {};
+    }
+    fetchData() {
+        service(BASKET_GOODS_URL, data => {
+            // Execute in EventLoop!!!
+            this.items = data;
+            console.log(this.items);
+        });
+    }
+}
+
 const goodsList = new GoodsList();
-goodsList.fetchData(goods);
-goodsList.render();
-console.log(goodsList.summary());
+goodsList.fetchData();
+
+const basketGoodsList = new BasketGoodsList();
+basketGoodsList.fetchData();
+
 
 // Hamburgers
 
@@ -49,7 +78,7 @@ class Cost {
         this.calories = calories;
     }
 
-    getSumOfCosts(cost = new Cost()) {
+    sum(cost = new Cost()) {
         return new Cost(this.price + cost.price, this.calories + cost.calories);
     }
 }
@@ -84,7 +113,7 @@ class Toppings {
     getCost() {
         let summary = new Cost();
         for (const toppingKey in this.items) {
-            summary = summary.getSumOfCosts(this.items[toppingKey].getCost());
+            summary = summary.sum(this.items[toppingKey].getCost());
         }
         return summary;
     }
@@ -121,7 +150,7 @@ class Hamburger {
     }
 
     getCost() {
-        return this.cost.getSumOfCosts(this.toppings.getCost());
+        return this.cost.sum(this.toppings.getCost());
     }
 }
 
