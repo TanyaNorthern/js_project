@@ -2,8 +2,8 @@ const BASE_URL = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-st
 const GOODS_URL = BASE_URL + '/catalogData.json';
 const BASKET_GOODS_URL = BASE_URL + '/getBasket.json'
 
-function service(url, callback) {
-    fetch(url).then(response => response.json()).then(data => callback(data));
+function service(url) {
+    return fetch(url).then(response => response.json());
 }
 
 class GoodsItem {
@@ -26,14 +26,7 @@ class GoodsList {
     }
 
     fetchData() {
-        service(GOODS_URL, data => {
-            // Execute in EventLoop!!!
-            this.items = data;
-            this.filteredItems = data;
-            goodsList.render();
-            console.log(this.items);
-            console.log(goodsList.summary());
-        });
+        return service(GOODS_URL);
     }
     filterItems(value) {
         this.filteredItems = this.items.filter(({ product_name }) => {
@@ -55,11 +48,7 @@ class BasketGoodsList {
         this.items = {};
     }
     fetchData() {
-        service(BASKET_GOODS_URL, data => {
-            // Execute in EventLoop!!!
-            this.items = data;
-            console.log(this.items);
-        });
+        return service(BASKET_GOODS_URL);
     }
 }
 
@@ -70,7 +59,16 @@ document.getElementsByClassName('search-button')[0].addEventListener('click', ()
 });
 
 const goodsList = new GoodsList();
-goodsList.fetchData();
+goodsList.fetchData().then(data => {
+    goodsList.items = data;
+    goodsList.filteredItems = data;
+    goodsList.render();
+    console.log(goodsList.items);
+    console.log(goodsList.summary());
+});
 
 const basketGoodsList = new BasketGoodsList();
-basketGoodsList.fetchData();
+basketGoodsList.fetchData().then(data => {
+    basketGoodsList.items = data;
+    console.log(basketGoodsList.items);
+});
