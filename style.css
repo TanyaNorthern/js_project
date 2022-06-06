@@ -3,7 +3,14 @@
     margin: 0;
 }
 
-body {
+html,
+body,
+#root {
+    width: 100%;
+    height: 100%;
+}
+
+#root {
     display: grid;
     grid-template-rows: max-content auto;
     gap: 40px;
@@ -12,7 +19,7 @@ body {
 header {
     height: 100px;
     display: grid;
-    grid-template-columns: auto max-content;
+    grid-template-columns: auto max-content max-content;
     background-color: black;
 }
 
@@ -21,7 +28,8 @@ header {
     padding: 10px;
 }
 
-.actions {
+.actions,
+.search {
     padding: 10px;
 }
 
@@ -35,7 +43,8 @@ button {
     gap: 40px
 }
 
-.goods-item {
+.goods-item,
+.cart-goods-item {
     width: 200px;
     height: 300px;
     padding: 10px;
@@ -44,4 +53,39 @@ button {
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+.goods-search {
+    height: 36px
+}
+
+.cart-goods {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    outline: 1px solid black;
+}
+
+.cart-goods-header {
+    display: flex;
+    justify-content: flex-end;
+    margin: 5px;
+}
+
+.cart-exit {
+    width: 10px;
+    height: 11px;
+    right: 12px;
+    top: 8px;
+}
+
+.cart-goods-list {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
 }
