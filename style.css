@@ -14,6 +14,7 @@ body,
     display: grid;
     grid-template-rows: max-content auto;
     gap: 40px;
+    position: relative;
 }
 
 header {
@@ -43,8 +44,7 @@ button {
     gap: 40px
 }
 
-.goods-item,
-.cart-goods-item {
+.goods-item {
     width: 200px;
     height: 300px;
     padding: 10px;
@@ -59,33 +59,61 @@ button {
     height: 36px
 }
 
-.cart-goods {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    top: 0;
-    left: 0;
+.fixed-area {
+    position: fixed;
     width: 100%;
     height: 100%;
-    background-color: white;
-    outline: 1px solid black;
-}
-
-.cart-goods-header {
     display: flex;
-    justify-content: flex-end;
-    margin: 5px;
-}
-
-.cart-exit {
-    width: 10px;
-    height: 11px;
-    right: 12px;
-    top: 8px;
-}
-
-.cart-goods-list {
-    display: flex;
+    align-items: center;
     justify-content: center;
-    gap: 40px;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.basket-card {
+    width: 80%;
+    height: 80%;
+    background-color: white;
+    display: grid;
+    grid-template-rows: max-content auto;
+}
+
+.basket-card__header {
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: auto max-content;
+}
+
+.basket-card__header__title {
+    padding: 10px
+}
+
+.basket-card__header__delete-icon {
+    background-image: url("img/delete_icon.png");
+    background-size: contain;
+    width: 30px;
+    height: 30px;
+    margin: 10px;
+    cursor: pointer;
+}
+
+.basket-card__content {
+    padding: 10px;
+}
+
+.basket-item {
+    padding: 10px;
+    display: flex;
+    gap: 30px
+}
+
+.basket-item__title {
+    font-weight: bold;
+}
+
+.basket-item__total {
+    margin-left: 100px;
+}
+
+.basket-item__count button {
+    padding: 0 5px
 }

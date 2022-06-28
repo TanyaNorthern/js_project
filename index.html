@@ -1,49 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <title>eShop</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
-    <script src="script.js"></script>
+   <meta charset="UTF-8">
+   <title>eShop</title>
+   <link rel="stylesheet" href="style.css">
+   <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+   <script src="script.js"></script>
 </head>
-
 <body>
-    <div id="root">
-        <header>
-            <h1 class="title">eShop</h1>
-            <div class="search">
-                <input type="text" class="goods-search" v-model="search" />
-                <button class="search-button" type="button" @click="filterItems">Искать</button>
-            </div>
-            <div class="actions">
-                <button class="cart-button" type="button" @click="onCartOpen">Корзина</button>
-            </div>
-        </header>
-        <main>
-            <div class="goods-list">
-                <h3 class="goods-list-stub" v-if="this.filteredItems.length <= 0">Нет данных</h3>
-                <h3 class="goods-list-stub" v-else></h3>
-                <div class="goods-item" v-for="item in filteredItems">
-                    <h3>{{ item.product_name }}</h3>
-                    <p>{{ item.price }}</p>
-                </div>
-            </div>
-            <div class="cart-goods" :style="getDisplayCart">
-                <div class="cart-goods-header">
-                    <img class="cart-exit" src="closeIcon.svg" @click="onCartClose" alt="close image">
-                </div>
-                <div class="cart-goods-list">
-                    <div class="cart-goods-item" v-for="item in cartItems.contents">
-                        <h3>{{ item.product_name }}</h3>
-                        <p>{{ item.price }}</p>
-                    </div>
-                </div>
-            </div>
-        </main>
-        <div>{{ calculatePrice }}</div>
-    </div>
-</body>
+   <div id="root">
+      <header>
+         <h1 class="title">eShop</h1>
+         <div class="search">
+            <input type="text" class="goods-search" v-model="search"/>
+            <custom-button v-on:click="filterItems">искать</custom-button>
+         </div>
+         <div class="actions">
+            <custom-button v-on:click="setVisionCard">Корзина</custom-button>
+         </div>
+      </header>
+      <main>
+         <div class="goods-list">
+            <goods-item v-for="item in filteredItems" v-bind:item="item" ></goods-item>
+         </div>
+      </main>
+      <basket-goods v-if="cardIsVision" v-on:closeclick="setVisionCard"></basket-goods>
 
+
+<!--      <div>{{ calculatePrice }}</div>-->
+   </div>
+</body>
 </html>
